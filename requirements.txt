@@ -2,4 +2,7 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 passlib[argon2]
+psycopg2-binary
+python-multipart
+argon2-cffi
 pydantic
