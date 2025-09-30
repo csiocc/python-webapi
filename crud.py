@@ -1,31 +1,39 @@
 from sqlalchemy.orm import Session
 import models, schemas
+from utils import hash_password
+from utils import verify_password
 
-def get_users(db: Session):
-    return db.query(models.User).all()
+def get_players(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Player).offset(skip).limit(limit).all()
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def get_player(db: Session, player_id: int):
+    return db.query(models.Player).filter(models.Player.id == player_id).first()
 
-def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(username=user.username, email=user.email)
-    db.add(db_user)
+def create_player(db: Session, player: schemas.PlayerCreate):
+    hashed_pw = hash_password(player.password)
+    db_player = models.Player(
+        name=player.name,
+        kills=player.kills,
+        wave=player.wave,
+        password_hash=hashed_pw
+    )
+    db.add(db_player)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_player)
+    return db_player
+    
+def authenticate_player(db: Session, name: str, password: str):
+    player = db.query(models.Player).filter(models.Player.name == name).first()
+    if not player:
+        return None
+    if not verify_password(password, player.password_hash):
+        return None
+    return player
 
-def update_user(db: Session, user_id: int, user_data: schemas.UserCreate):
-    db_user = get_user(db, user_id)
-    if db_user:
-        db_user.username = user_data.username
-        db_user.email = user_data.email
-        db.commit()
-        db.refresh(db_user)
-    return db_user
-
-def delete_user(db: Session, user_id: int):
-    db_user = get_user(db, user_id)
-    if db_user:
-        db.delete(db_user)
-        db.commit()
-    return db_user
+def get_top10_players(db: Session):
+    return (
+        db.query(models.Player)
+        .order_by(models.Player.wave.desc(), models.Player.kills.desc())
+        .limit(10)
+        .all()
+    )

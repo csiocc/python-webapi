@@ -1,14 +1,21 @@
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
-    username: str
-    email: str
+class PlayerBase(BaseModel):
+    name: str
+    kills: int
+    wave: int
 
-class UserCreate(UserBase):
-    pass
+class PlayerCreate(PlayerBase):
+    password: str  # kommt vom Client als Klartext (wird später gehasht)
 
-class User(UserBase):
+class Player(PlayerBase):
     id: int
 
     class Config:
-        orm_mode = True
+        form_attributes = True
+
+class PlayerLogin(BaseModel):
+    name: str
+    password: str
+
+

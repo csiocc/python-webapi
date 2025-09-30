@@ -3,18 +3,12 @@ from sqlalchemy.orm import Session
 import models, schemas, crud
 from database import SessionLocal, engine
 
+# DB-Tabellen erstellen, falls nicht vorhanden
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-@app.get("/")
-def root():
-    return {"message": "Hello, World!"}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8040, reload=True)
-
-# Dependency: DB-Session pro Request
+# Dependency: DB-Session für jede Anfrage
 def get_db():
     db = SessionLocal()
     try:
@@ -22,36 +16,39 @@ def get_db():
     finally:
         db.close()
 
-# ✅ GET all users
-@app.get("/api/users", response_model=list[schemas.User])
-def read_users(db: Session = Depends(get_db)):
-    return crud.get_users(db)
 
-# ✅ GET user by id
-@app.get("/api/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# ✅ Neuen Spieler erstellen
+@app.post("/players/", response_model=schemas.Player)
+def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
+    return crud.create_player(db=db, player=player)
 
-# ✅ POST create user
-@app.post("/api/users", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.create_user(db, user)
 
-# ✅ PUT update user
-@app.put("/api/users/{user_id}", response_model=schemas.User)
-def update_user(user_id: int, user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.update_user(db, user_id, user)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+# ✅ Alle Spieler abrufen
+@app.get("/players/", response_model=list[schemas.Player])
+def read_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_players(db=db, skip=skip, limit=limit)
 
-# ✅ DELETE user
-@app.delete("/api/users/{user_id}", status_code=204)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.delete_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return None
+# ✅ Top 10 Ranking
+@app.get("/players/top10", response_model=list[schemas.Player])
+def read_top10_players(db: Session = Depends(get_db)):
+    return crud.get_top10_players(db)
+    
+# ✅ Spieler nach ID abrufen
+@app.get("/players/{player_id}", response_model=schemas.Player)
+def read_player(player_id: int, db: Session = Depends(get_db)):
+    db_player = crud.get_player(db, player_id=player_id)
+    if db_player is None:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return db_player
+
+
+
+
+
+# ✅ Login
+@app.post("/login/", response_model=schemas.Player)
+def login(player: schemas.PlayerLogin, db: Session = Depends(get_db)):
+    db_player = crud.authenticate_player(db, name=player.name, password=player.password)
+    if not db_player:
+        raise HTTPException(status_code=401, detail="Invalid name or password")
+    return db_player
