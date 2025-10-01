@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import models, schemas, crud
 from database import SessionLocal, engine
@@ -16,6 +17,21 @@ def get_db():
     finally:
         db.close()
 
+# CORS Middleware zugriff erlauben
+origins = [
+    "https://csiocc.github.io",
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://python-webapi-cefe059a37d0.herokuapp.com"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # welche Domains dürfen zugreifen
+    allow_credentials=True,
+    allow_methods=["*"],            # z.B. ["GET", "POST"]
+    allow_headers=["*"],            # z.B. ["Content-Type", "Authorization"]
+)
 
 #  Neuen Spieler erstellen
 @app.post("/players/", response_model=schemas.Player)
