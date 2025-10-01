@@ -10,16 +10,12 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 # CORS Middleware zugriff erlauben
-origins = [
-    "https://csiocc.github.io",
-    "http://localhost:5500",
-    "http://127.0.0.1",
-    "https://python-webapi-cefe059a37d0.herokuapp.com"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       
+    allow_origins=[
+        "http://localhost:5500",       # dein lokales Spiel
+        "https://csiocc.github.io",    # falls GitHub Pages Frontend
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
