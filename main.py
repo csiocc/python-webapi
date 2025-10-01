@@ -20,7 +20,7 @@ def get_db():
 # CORS Middleware zugriff erlauben
 origins = [
     "https://csiocc.github.io",
-    "http://localhost",
+    "http://localhost:5500",
     "http://127.0.0.1",
     "https://python-webapi-cefe059a37d0.herokuapp.com"
 ]
