@@ -2,8 +2,10 @@ from pydantic import BaseModel
 
 class PlayerBase(BaseModel):
     name: str
+    email: str 
     kills: int
     wave: int
+
 
 class PlayerCreate(PlayerBase):
     password: str  # kommt vom Client als Klartext (wird später gehasht)
