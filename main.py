@@ -13,8 +13,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5500",       # dein lokales Spiel
-        "https://csiocc.github.io",    # falls GitHub Pages Frontend
+        "*"   # falls GitHub Pages Frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
