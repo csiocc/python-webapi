@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import models, schemas
-from utils import hash_password
-from utils import verify_password
+from utils import hash_password, verify_password
+from fastapi import HTTPException
 
 def get_players(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Player).offset(skip).limit(limit).all()
@@ -10,9 +10,21 @@ def get_player(db: Session, player_id: int):
     return db.query(models.Player).filter(models.Player.id == player_id).first()
 
 def create_player(db: Session, player: schemas.PlayerCreate):
+    # Prüfen ob Name schon existiert
+    existing_name = db.query(models.Player).filter(models.Player.name == player.name).first()
+    if existing_name:
+        raise HTTPException(status_code=400, detail="Name already taken")
+
+    # Prüfen ob Email schon existiert (falls Email im Schema vorhanden ist!)
+    if hasattr(player, "email") and player.email:
+        existing_email = db.query(models.Player).filter(models.Player.email == player.email).first()
+        if existing_email:
+            raise HTTPException(status_code=400, detail="Email already registered")
+
     hashed_pw = hash_password(player.password)
     db_player = models.Player(
         name=player.name,
+        email=player.email,   # <--- wichtig, falls im Model enthalten
         kills=player.kills,
         wave=player.wave,
         password_hash=hashed_pw
@@ -21,7 +33,7 @@ def create_player(db: Session, player: schemas.PlayerCreate):
     db.commit()
     db.refresh(db_player)
     return db_player
-    
+
 def authenticate_player(db: Session, name: str, password: str):
     player = db.query(models.Player).filter(models.Player.name == name).first()
     if not player:
