@@ -9,14 +9,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Dependency: DB-Session für jede Anfrage
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 # CORS Middleware zugriff erlauben
 origins = [
     "https://csiocc.github.io",
@@ -27,11 +19,19 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # welche Domains dürfen zugreifen
+    allow_origins=origins,       
     allow_credentials=True,
-    allow_methods=["*"],            # z.B. ["GET", "POST"]
-    allow_headers=["*"],            # z.B. ["Content-Type", "Authorization"]
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+# Dependency: DB-Session für jede Anfrage
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 #  Neuen Spieler erstellen
 @app.post("/players/", response_model=schemas.Player)
