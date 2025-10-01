@@ -14,6 +14,10 @@ class Player(PlayerBase):
     class Config:
         form_attributes = True
 
+class PlayerUpdateScore(BaseModel):
+    wave: int
+    kills: int
+
 class PlayerLogin(BaseModel):
     name: str
     password: str

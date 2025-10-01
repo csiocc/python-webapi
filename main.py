@@ -17,23 +17,23 @@ def get_db():
         db.close()
 
 
-# ✅ Neuen Spieler erstellen
+#  Neuen Spieler erstellen
 @app.post("/players/", response_model=schemas.Player)
 def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
     return crud.create_player(db=db, player=player)
 
 
-# ✅ Alle Spieler abrufen
+#  Alle Spieler abrufen
 @app.get("/players/", response_model=list[schemas.Player])
 def read_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_players(db=db, skip=skip, limit=limit)
 
-# ✅ Top 10 Ranking
+#  Top 10 Ranking
 @app.get("/players/top10", response_model=list[schemas.Player])
 def read_top10_players(db: Session = Depends(get_db)):
     return crud.get_top10_players(db)
     
-# ✅ Spieler nach ID abrufen
+#  Spieler nach ID abrufen
 @app.get("/players/{player_id}", response_model=schemas.Player)
 def read_player(player_id: int, db: Session = Depends(get_db)):
     db_player = crud.get_player(db, player_id=player_id)
@@ -41,11 +41,14 @@ def read_player(player_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Player not found")
     return db_player
 
+@app.put("/players/{player_id}/score", response_model=schemas.Player)
+def update_player_score(player_id: int, score_update: schemas.PlayerUpdateScore, db: Session = Depends(get_db)):
+    player = crud.update_player_score(db, player_id, score_update)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return player
 
-
-
-
-# ✅ Login
+#  Login
 @app.post("/login/", response_model=schemas.Player)
 def login(player: schemas.PlayerLogin, db: Session = Depends(get_db)):
     db_player = crud.authenticate_player(db, name=player.name, password=player.password)

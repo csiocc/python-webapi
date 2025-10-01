@@ -37,3 +37,18 @@ def get_top10_players(db: Session):
         .limit(10)
         .all()
     )
+
+def update_player_score(db: Session, player_id: int, score_update: schemas.PlayerUpdateScore):
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        return None
+    
+    # Nur aktualisieren, wenn neue Werte höher sind
+    if score_update.wave > player.wave:
+        player.wave = score_update.wave
+    if score_update.kills > player.kills:
+        player.kills = score_update.kills
+    
+    db.commit()
+    db.refresh(player)
+    return player
