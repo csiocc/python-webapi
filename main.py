@@ -28,9 +28,15 @@ def get_db():
     finally:
         db.close()
 
+### Routen ###
+
 #  Neuen Spieler erstellen
-@app.post("/players/", response_model=schemas.Player)
+@app.post("/players/", response_model=schemas.Player, status_code=201)
 def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
+    existing_player = db.query(models.Player).filter(models.Player.name == player.name).first()
+    if existing_player:
+        raise HTTPException(status_code=400, detail="Name already exists")
+
     return crud.create_player(db=db, player=player)
 
 
