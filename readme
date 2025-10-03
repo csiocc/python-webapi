@@ -6,3 +6,6 @@ start venv:
 2. source venv/bin/activate
 3. uvicorn main:app --reload --port 8080  
 
+To migrate DB
+
+heroku run python migrate.py
