@@ -2,8 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import models, schemas, crud
-from database import SessionLocal, engine
-
+from database import SessionLocal, engine, get_db
+from schemas import PlayerUpdateMhScore
 # DB-Tabellen erstellen, falls nicht vorhanden
 models.Base.metadata.create_all(bind=engine)
 
@@ -72,7 +72,10 @@ def update_player_score(player_id: int, score_update: schemas.PlayerUpdateScore,
 
 @app.put("/players/{player_id}/mhscore")
 def update_player_mhscore(player_id: int, score_update: PlayerUpdateMhScore, db: Session = Depends(get_db)):
-    return crud.update_player_mhscore(db, player_id, score_update.mhscore)
+    player = crud.update_player_mhscore(db, player_id, score_update.mhscore)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return {"id": player.id, "mhscore": player.mhscore}
 
 #  Login
 @app.post("/login/", response_model=schemas.Player)

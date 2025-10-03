@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 import models, schemas
 from utils import hash_password, verify_password
 from fastapi import HTTPException
+from models import Player
 
 
 def get_players(db: Session, skip: int = 0, limit: int = 100):
@@ -80,7 +81,7 @@ def update_player_score(db: Session, player_id: int, score_update: schemas.Playe
 def update_player_mhscore(db: Session, player_id: int, new_score: int):
     player = db.query(Player).filter(Player.id == player_id).first()
     if not player:
-        return None
+        return None  # Or raise an exception if you prefer
 
     if new_score > player.mhscore:
         player.mhscore = new_score
