@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import models, schemas, crud
-from database import SessionLocal, engine, get_db
+from database import SessionLocal, engine
 from schemas import PlayerUpdateMhScore
 # DB-Tabellen erstellen, falls nicht vorhanden
 models.Base.metadata.create_all(bind=engine)
