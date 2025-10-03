@@ -27,6 +27,7 @@ def create_player(db: Session, player: schemas.PlayerCreate):
         email=player.email,   # <--- wichtig, falls im Model enthalten
         kills=player.kills,
         wave=player.wave,
+        mhscore=player.mhscore,
         password_hash=hashed_pw
     )
     db.add(db_player)
@@ -50,6 +51,7 @@ def get_top10_players(db: Session):
         .all()
     )
 
+# Playerscore update für Endlesswave
 def update_player_score(db: Session, player_id: int, score_update: schemas.PlayerUpdateScore):
     player = db.query(models.Player).filter(models.Player.id == player_id).first()
     if not player:
@@ -63,4 +65,18 @@ def update_player_score(db: Session, player_id: int, score_update: schemas.Playe
     
     db.commit()
     db.refresh(player)
+    return player
+
+# Playerscore update für Moorhuhnium
+def update_mhscore(db: Session, player_id: int, new_score: int):
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        return None
+
+    # Nur aktualisieren, wenn neue Werte höher sind
+    if new_score > player.mhscore: 
+        player.mhscore = new_score
+        db.commit()
+        db.refresh(player)
+
     return player

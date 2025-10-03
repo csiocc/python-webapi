@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, 
 from database import Base
 
 class Player(Base):
@@ -9,4 +9,5 @@ class Player(Base):
     email = Column(String, unique=True, index=True)  
     kills = Column(Integer, default=0)
     wave = Column(Integer, default=1)
+    mhscore = Column(Integer, default=0)  #score für Moorhuhnium
     password_hash = Column(String)  # hier wird das gehashte Passwort gespeichert

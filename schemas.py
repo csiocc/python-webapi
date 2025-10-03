@@ -5,10 +5,11 @@ class PlayerBase(BaseModel):
     email: str 
     kills: int
     wave: int
+    mhscore: int = 0
 
 
 class PlayerCreate(PlayerBase):
-    password: str  # kommt vom Client als Klartext (wird später gehasht)
+    password: str  # rohes Passwort für die Erstellung
 
 class Player(PlayerBase):
     id: int
