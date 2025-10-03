@@ -25,4 +25,7 @@ class PlayerLogin(BaseModel):
     name: str
     password: str
 
+class PlayerUpdateMhScore(BaseModel):
+    mhscore: int
+
 
