@@ -5,4 +5,5 @@ passlib[argon2]
 psycopg2-binary
 python-multipart
 argon2-cffi
+python-dotenv
 pydantic
