@@ -51,6 +51,14 @@ def get_top10_players(db: Session):
         .all()
     )
 
+def get_top10_mh_players(db: Session):
+    return (
+        db.query(models.Player)
+        .order_by(models.Player.mhscore.desc())
+        .limit(10)
+        .all()
+    )
+
 # Playerscore update für Endlesswave
 def update_player_score(db: Session, player_id: int, score_update: schemas.PlayerUpdateScore):
     player = db.query(models.Player).filter(models.Player.id == player_id).first()

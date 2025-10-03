@@ -1,6 +1,8 @@
+To startup the API Local
+
+1. pip install -r requirements-dev.txt
 
 start venv: 
-
-source venv/bin/activate
-uvicorn main:app --reload --port 8080  
+2. source venv/bin/activate
+3. uvicorn main:app --reload --port 8080  
 

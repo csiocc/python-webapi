@@ -49,6 +49,11 @@ def read_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 @app.get("/players/top10", response_model=list[schemas.Player])
 def read_top10_players(db: Session = Depends(get_db)):
     return crud.get_top10_players(db)
+
+# Top 10 Moorhuhnium Ranking
+@app.get("/players/top10/mh", response_model=list[schemas.Player])
+def read_top10_mh_players(db: Session = Depends(get_db)):
+    return crud.get_top10_mh_players(db)
     
 #  Spieler nach ID abrufen
 @app.get("/players/{player_id}", response_model=schemas.Player)
