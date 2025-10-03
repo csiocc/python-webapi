@@ -3,6 +3,7 @@ import models, schemas
 from utils import hash_password, verify_password
 from fastapi import HTTPException
 
+
 def get_players(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Player).offset(skip).limit(limit).all()
 
@@ -76,12 +77,10 @@ def update_player_score(db: Session, player_id: int, score_update: schemas.Playe
     return player
 
 # Playerscore update für Moorhuhnium
-def update_player_mhscore(db: Session, player_id: int, score_update: PlayerUpdateMhScore):
+def update_player_mhscore(db: Session, player_id: int, new_score: int):
     player = db.query(Player).filter(Player.id == player_id).first()
     if not player:
         return None
-
-    new_score = score_update.mhscore   
 
     if new_score > player.mhscore:
         player.mhscore = new_score

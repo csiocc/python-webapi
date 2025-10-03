@@ -70,13 +70,9 @@ def update_player_score(player_id: int, score_update: schemas.PlayerUpdateScore,
         raise HTTPException(status_code=404, detail="Player not found")
     return player
 
-@app.put("/players/{player_id}/mhscore", response_model=schemas.Player)
-def update_player_mhscore(
-    player_id: int,
-    score_update: schemas.PlayerUpdateMhScore,
-    db: Session = Depends(get_db)
-):
-    return crud.update_player_mhscore(db, player_id, score_update)
+@app.put("/players/{player_id}/mhscore")
+def update_player_mhscore(player_id: int, score_update: PlayerUpdateMhScore, db: Session = Depends(get_db)):
+    return crud.update_player_mhscore(db, player_id, score_update.mhscore)
 
 #  Login
 @app.post("/login/", response_model=schemas.Player)
