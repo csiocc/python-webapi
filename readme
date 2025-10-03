@@ -8,4 +8,4 @@ start venv:
 
 To migrate DB
 
-heroku run python migrate.py
+alembic revision --autogenerate -m  "add mhscore column" <- example
