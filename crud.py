@@ -76,13 +76,14 @@ def update_player_score(db: Session, player_id: int, score_update: schemas.Playe
     return player
 
 # Playerscore update für Moorhuhnium
-def update_player_mhscore(db: Session, player_id: int, new_score: int):
-    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+def update_player_mhscore(db: Session, player_id: int, score_update: PlayerUpdateMhScore):
+    player = db.query(Player).filter(Player.id == player_id).first()
     if not player:
         return None
 
-    # Nur aktualisieren, wenn neue Werte höher sind
-    if new_score > player.mhscore: 
+    new_score = score_update.mhscore   
+
+    if new_score > player.mhscore:
         player.mhscore = new_score
         db.commit()
         db.refresh(player)
